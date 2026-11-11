@@ -1,0 +1,137 @@
+{
+  "info": {
+    "_postman_id": "71d8ce70-9b0e-4e8d-a60d-0b80716a74f5",
+    "name": "pgvector RAG Gemini API",
+    "description": "Postman collection for the Express document CRUD, pgvector retrieval, and Gemini question-answering API.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000"
+    },
+    {
+      "key": "documentId",
+      "value": ""
+    }
+  ],
+  "item": [
+    {
+      "name": "Health check",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/health",
+        "description": "Check that the API is running."
+      }
+    },
+    {
+      "name": "List documents",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/api/documents",
+        "description": "List all documents, newest first."
+      }
+    },
+    {
+      "name": "Get document",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/api/documents/{{documentId}}",
+        "description": "Get a document by its UUID."
+      }
+    },
+    {
+      "name": "Create document",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "if (pm.response.code === 201) {",
+              "    const document = pm.response.json();",
+              "    if (document.id) {",
+              "        pm.collectionVariables.set('documentId', document.id);",
+              "    }",
+              "}"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"title\": \"About pgvector\",\n  \"content\": \"pgvector adds vector similarity search to PostgreSQL.\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": "{{baseUrl}}/api/documents",
+        "description": "Create a document and generate its Gemini embedding. Saves the returned ID to the collection variable for other requests."
+      }
+    },
+    {
+      "name": "Update document",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"title\": \"About pgvector (updated)\",\n  \"content\": \"pgvector enables vector similarity search inside PostgreSQL.\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": "{{baseUrl}}/api/documents/{{documentId}}",
+        "description": "Update a document and regenerate its Gemini embedding."
+      }
+    },
+    {
+      "name": "Delete document",
+      "request": {
+        "method": "DELETE",
+        "url": "{{baseUrl}}/api/documents/{{documentId}}",
+        "description": "Delete a document by its UUID."
+      }
+    },
+    {
+      "name": "Ask a question (RAG)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"question\": \"What does pgvector add to PostgreSQL?\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": "{{baseUrl}}/api/ask",
+        "description": "Embed the question, retrieve the three nearest documents, and generate an answer with Gemini."
+      }
+    }
+  ]
+}

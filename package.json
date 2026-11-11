@@ -1,0 +1,26 @@
+{
+  "name": "pgvector-rag-gemini-demo",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "dev": "node --watch src/server.js",
+    "start": "node src/server.js",
+    "db:generate": "prisma generate",
+    "db:migrate": "prisma migrate dev",
+    "db:seed": "node prisma/seed.js"
+  },
+  "dependencies": {
+    "@google/genai": "^2.0.0",
+    "@prisma/client": "^6.7.1",
+    "dotenv": "^16.4.7",
+    "express": "^5.1.0",
+    "nodemon": "^3.1.14"
+  },
+  "devDependencies": {
+    "prisma": "^6.7.1"
+  }
+}
